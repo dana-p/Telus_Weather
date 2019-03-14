@@ -1,0 +1,1 @@
+NODE_ENV="dev" GOOGLE_KEY="AIzaSyDnJ2tIQczqGekf9T-JPIse88KQUjV10t0" DARKSKYKEY="66ac263b54a90fb675ccb7f963b8471e" nodemon --inspect server.js
