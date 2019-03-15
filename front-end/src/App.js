@@ -12,39 +12,36 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {
-    // 测试 devServer 的代理功能
-    // fetch('/api/category')
-    //     .then(resp => resp.json())
-    //     .then(res => console.log('here here', res));
-  }
-
   handleChange = e => {
+    var city =
+      e.target.value.charAt(0).toUpperCase() +
+      e.target.value.slice(1).toLowerCase();
     this.setState({
-      city: e.target.value
+      city: city
     });
   };
 
-  handleSubmit = () => {
+  handleSubmit = e => {
     var self = this;
-    axios
-      .get(`/api/weather/city/${self.state.city}`)
-      .then(res => {
-        // const persons = res.data;
-        console.log(res.data);
-        self.setState({
-          weather: `Weather in ${self.state.city} is ${
-            res.data.summary
-          } with a temperature of ${res.data.temperature} °F.`
+    e.preventDefault();
+
+    if (self.state.city !== "")
+      axios
+        .get(`/api/weather/city/${self.state.city}`)
+        .then(res => {
+          self.setState({
+            weather: `Weather in ${self.state.city} is ${
+              res.data.summary
+            } with a temperature of ${res.data.temperature}°C.`
+          });
+        })
+        .catch(function(error) {
+          self.setState({
+            weather: `ERROR! Could not process the city of ${
+              self.state.city
+            }. If you believe this is an error, please try again.`
+          });
         });
-      })
-      .catch(function(error) {
-        self.setState({
-          weather: `ERROR! Could not process the city of ${
-            self.state.city
-          }. If you believe this is an error, please try again.`
-        });
-      });
   };
 
   render() {
@@ -55,7 +52,7 @@ class App extends Component {
           <h2>Search for a city below to get the weather!</h2>
         </div>
         <br />
-        <div className="form-group">
+        <form className="form-group" onClick={this.handleSubmit}>
           <input
             type="text"
             value={this.state.city}
@@ -63,10 +60,10 @@ class App extends Component {
             className="form-control"
           />
           <br />
-          <button className="btn btn-primary" onClick={this.handleSubmit}>
+          <button type="submit" className="btn btn-primary">
             Submit
           </button>
-        </div>
+        </form>
         <div>The weather in {this.state.city} ...</div>
         <div>{this.state.weather}</div>
       </div>

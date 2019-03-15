@@ -37,24 +37,6 @@ app.use(methodOverride("X-HTTP-Method-Override"));
 const darkskyKey = process.env.DARKSKYKEY;
 const googleKey = process.env.GOOGLE_KEY;
 
-app.get("/api/weather/latlng/:lat,:lng", (req, res) => {
-  console.log(`${req.params.lat},${req.params.lng}`);
-
-  axios
-    .get(
-      `https://api.darksky.net/forecast/${darkskyKey}/${req.params.lat},${
-        req.params.lng
-      }`
-    )
-    .then(response => {
-      res.send(JSON.stringify(response.data.currently));
-    })
-    .catch(error => {
-      console.log(error);
-      res.send(error);
-    });
-});
-
 app.get("/api/weather/city/:city", (req, res) => {
   axios
     .get(
@@ -69,12 +51,11 @@ app.get("/api/weather/city/:city", (req, res) => {
         (cityData.formatted_address.indexOf(req.params.city) >= 0 ||
           cityData.plus_code.compound_code.indexOf(req.params.city) >= 0)
       ) {
-        console.log(cityData);
         var lat = cityData.geometry.location.lat;
         var lng = cityData.geometry.location.lng;
 
         return axios.get(
-          `https://api.darksky.net/forecast/${darkskyKey}/${lat},${lng}`
+          `https://api.darksky.net/forecast/${darkskyKey}/${lat},${lng}?units=si&exclude=minutely,hourly,daily,alerts,flags`
         );
       } else throw "CITY NOT FOUND";
     })
@@ -95,11 +76,6 @@ if (process.env.NODE_ENV !== "dev") {
     res.sendFile(path.join(__dirname, "front-end", "build", "index.html"));
   });
 }
-
-// //build mode
-// server.express.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname + "/client/public/index.html"));
-// });
 
 /*
  |--------------------------------------
